@@ -3,11 +3,15 @@
 module Homework2
   
   class Question1
-    attr_accessor :english_words, :german_words, :t, :english_file, :german_file
+    attr_accessor :english_words, :german_words, :t, :english_file, :german_file, 
+      :english_sentences, :german_sentences
     
     #no idea what input/output is
     def em_algorithm
       puts "blah"
+      
+      
+      
     end
 
     def initialize(english, german)
@@ -16,7 +20,10 @@ module Homework2
       #provides number of each word
       @english_words = Hash.new(0)
       @german_words = Hash.new(0)
-      @t = Hash.new(0.0)
+      @t = {}
+      
+      @english_sentences = []
+      @german_sentences = []
       # raise "wtf" if @english_words.nil?
       # @english_words = Hash.new(0)
       
@@ -24,6 +31,7 @@ module Homework2
       File.open(@english_file, 'r') do |file|
         while line=file.gets
           words = line.to_s.split(' ')
+          @english_sentences << words
           words.each do |word|
             @english_words[word.to_s] += 1
           end
@@ -35,6 +43,7 @@ module Homework2
       File.open(@german_file, 'r') do |file|
         while line=file.gets
           words = line.to_s.split(' ')
+          @german_sentences << words
           words.each do |word|
             @german_words[word.to_s] += 1
           end
@@ -47,8 +56,9 @@ module Homework2
       
       puts 'starting initial filling in of t at ' + Time.new.inspect
       @english_words.keys.each do |e|
+        @t[e.to_s] = Hash.new(0.0)
         @german_words.keys.each do |f|
-          @t[f.to_s + '|' + e.to_s] = 1. / num.to_f
+          @t[e.to_s][f.to_s] = 1./num.to_f
         end
       end
       puts 'finished initial filling in of t at ' + Time.new.inspect      
@@ -73,16 +83,16 @@ module Homework2
     
       #for each word, print list of k highest
       dev_words.each do |word|
+        word.chomp!
         k_highest = Array.new
       
         #go through each german word
         @german_words.keys.each do |f|
-          prob = @t[f.to_s + '|' + word.chomp]
+          @t[word] = Hash.new(0.0) if @t[word].nil?
+          prob = @t[word][f.to_s]
           if k_highest.size < k
             k_highest << prob
           else
-            p prob
-            p k_highest
             if prob > k_highest[0]
               k_highest[0] = prob
             end
@@ -103,8 +113,8 @@ module Homework2
         max_prob = 0
 
         e_sentence.each_with_index do |e,j|
-          if @t[f.to_s+'|'+e.to_s] > max_prob
-            max_prob = @t[f.to_s+'|'+e.to_s]
+          if @t[e.to_s][f.to_s] >= max_prob
+            max_prob = @t[e.to_s][f.to_s]
             max_alignment = j
           end          
         end
@@ -115,29 +125,10 @@ module Homework2
       return alignments
     end
     
-    def bullet3(n=20)
-      english_sentences = []
-      german_sentences = []
-      
-      i = 0
-      File.open(@english_file, 'r') do |file|
-        while(line = file.gets)
-          english_sentences << line.to_s.split(' ') if i < n        
-          i+=1
-        end
-      end
-      
-      i = 0
-      File.open(@german_file, 'r') do |file|
-        while(line = file.gets)
-          german_sentences << line.to_s.split(' ') if i < n
-          i+=1
-        end
-      end
-      
-      1.upto(n) do |i|
-        f_sentence = german_sentences[i]
-        e_sentence = english_sentences[i]
+    def bullet3(n=20)      
+      n.times do |i|
+        f_sentence = @german_sentences[i]
+        e_sentence = @english_sentences[i]
         
         alignments = sentence_alignments(f_sentence, e_sentence)
         
