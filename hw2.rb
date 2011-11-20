@@ -4,12 +4,42 @@ module Homework2
   
   class Question1
     attr_accessor :english_words, :german_words, :t, :english_file, :german_file, 
-      :english_sentences, :german_sentences
+      :english_sentences, :german_sentences, :counts
     
     #no idea what input/output is
     def em_algorithm
-      puts "blah"
+      n = @english_sentences.size
+      @counts = Hash.new(0)
       
+      raise "ASDFAKSJDFA" unless @english_sentences.size == @german_sentences.size
+      
+      delta = {}
+      n.times do |k|
+        eng = @english_sentences[k]
+        ger = @german_sentences[k]
+        
+        ger.each_with_index do |f, i|
+          eng.each_with_index do |e, j|
+            
+            sum = 0.0
+            @t.each do |e_word, g_hash|
+              sum += g_hash[f]
+            end
+            
+            delta[ [k,i,j] ] = @t[e][f].to_f / sum
+            
+            
+            @counts[ [e,f] ] += delta[ [k, i, j] ]
+            @counts[ e ] += delta[ [k,i,j] ]
+            # @counts[ [j,i,l,m] ] += delta[ [k,i,j] ]
+            # @counts[ [i,l,m] ] += delta[ [k,i,j] ]
+            
+            @t[e][f] = @counts[[e,f]]/@counts[e]
+          end
+        end
+        
+        @t
+      end
       
       
     end
@@ -133,6 +163,17 @@ module Homework2
         alignments = sentence_alignments(f_sentence, e_sentence)
         
         p alignments
+        
+        output = []
+        alignments.each_with_index do |a,i|
+          output << [ f_sentence[i], e_sentence[a] ]
+        end
+        p output
+        p f_sentence
+        p e_sentence
+        
+        puts ''
+        
       end
     end
     
@@ -144,8 +185,10 @@ module Homework2
 end
 
 # Homework2::Question1.init('corpus.en', 'corpus.de')
-en = 'corpus_small.en'
-de = 'corpus_small.de'
+# en = 'corpus_small.en'
+# de = 'corpus_small.de'
+en = 'corpus_500.en'
+de = 'corpus_500.de'
 
 q1 = Homework2::Question1.new(en,de)
 q1.bullet2('devwords.txt')
