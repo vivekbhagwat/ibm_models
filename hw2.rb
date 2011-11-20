@@ -1,45 +1,59 @@
 #Vivek Bhagwat vsb2110 hw2 NLP
+
 module Homework2
-  #provides number of each word
-  @english_words = Hash.new(0)
-  @german_words = Hash.new(0)
-  @t = Hash.new(0.0)
   
-  module Question1
+  class Question1
+    attr_accessor :english_words, :german_words, :t
+    
     #no idea what input/output is
-    def self.em_algorithm
+    def em_algorithm
       puts "blah"
     end
 
-    def self.init(english_file, german_file)
+    def init(english_file, german_file)
+      #provides number of each word
+      @english_words = Hash.new(0)
+      @german_words = Hash.new(0)
+      @t = Hash.new(0.0)
+      # raise "wtf" if @english_words.nil?
+      # @english_words = Hash.new(0)
+      
       #get counts of english words
-      File.open(english_file, 'r') do |line|
-        words = line.to_s.split(' ')
-        words.each do |word|
-          @english_words[word.to_s] += 1
+      File.open(english_file, 'r') do |file|
+        while line=file.gets
+          words = line.to_s.split(' ')
+          words.each do |word|
+            @english_words[word.to_s] += 1
+          end
         end
       end
+      puts 'finished english file parsing'
   
       #get counts of german words
-      File.open(german_file, 'r') do |line|
-        words = line.to_s.split(' ')
-        words.each do |word|
-          @german_words[word.to_s] += 1
+      File.open(german_file, 'r') do |file|
+        while line=file.gets
+          words = line.to_s.split(' ')
+          words.each do |word|
+            @german_words[word.to_s] += 1
+          end
         end
       end
-  
+      puts 'finished german file parsing'
   
       #should NULL be included? is this even right?
       num = @english_words.size
-  
+      
+      puts 'starting initial filling in of t at ' + Time.new.inspect
       @english_words.each do |e|
         @german_words.each do |f|
           @t[f.to_s + '|' + e.to_s] = 1 / num
         end
       end
+      puts 'finished initial filling in of t at ' + Time.new.inspect
+      
     end
     
-    def self.bullet2(dev_file)
+    def bullet2(dev_file)
       1.upto(5) do
         em_algorithm
       end
@@ -48,7 +62,7 @@ module Homework2
     end
 
     #bullet 2 part 2
-    def self.k_best_foreign(dev_file, k=10)
+    def k_best_foreign(dev_file, k=10)
       dev_words = []
       File.open(dev_file, 'r') do |word|
         dev_words << word.to_s
@@ -76,7 +90,7 @@ module Homework2
       end
     end
     
-    def self.sentence_alignments(f_sentence=[], e_sentence=[])
+    def sentence_alignments(f_sentence=[], e_sentence=[])
       alignments = []
       
       f_sentence.each_with_index do |f,i|
@@ -96,7 +110,7 @@ module Homework2
       return alignments
     end
     
-    def self.bullet3(english_file, german_file, n=20)
+    def bullet3(english_file, german_file, n=20)
       english_sentences = []
       german_sentences = []
       
@@ -129,4 +143,8 @@ module Homework2
   end
 end
 
-Homework2::Question1.em_algorithm
+# Homework2::Question1.init('corpus.en', 'corpus.de')
+
+q1 = Homework2::Question1.new
+q1.init('corpus.en', 'corpus.de')
+p q1.english_words
