@@ -8,7 +8,7 @@ module Homework2
   module Question1
     #no idea what input/output is
     def self.em_algorithm
-      p "blah"
+      puts "blah"
     end
 
     def self.init(english_file, german_file)
@@ -38,6 +38,14 @@ module Homework2
         end
       end
     end
+    
+    def self.bullet2(dev_file)
+      1.upto(5) do
+        em_algorithm
+      end
+      
+      k_best_foreign(dev_file)
+    end
 
     #bullet 2 part 2
     def self.k_best_foreign(dev_file, k=10)
@@ -62,11 +70,11 @@ module Homework2
           end
           k_highest.sort!
         end
-      
-        p k_highest #prints list
+        
+        #english: french_1, french_2, ... french_k
+        puts word + ": " + k_highest.inspect #prints list
       end
     end
-    
     
     def self.sentence_alignments(f_sentence=[], e_sentence=[])
       alignments = []
@@ -88,7 +96,7 @@ module Homework2
       return alignments
     end
     
-    def self.part_3(english_file, german_file, n=20)
+    def self.bullet3(english_file, german_file, n=20)
       english_sentences = []
       german_sentences = []
       
