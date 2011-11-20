@@ -3,14 +3,16 @@
 module Homework2
   
   class Question1
-    attr_accessor :english_words, :german_words, :t
+    attr_accessor :english_words, :german_words, :t, :english_file, :german_file
     
     #no idea what input/output is
     def em_algorithm
       puts "blah"
     end
 
-    def init(english_file, german_file)
+    def initialize(english, german)
+      @english_file = english
+      @german_file = german
       #provides number of each word
       @english_words = Hash.new(0)
       @german_words = Hash.new(0)
@@ -19,7 +21,7 @@ module Homework2
       # @english_words = Hash.new(0)
       
       #get counts of english words
-      File.open(english_file, 'r') do |file|
+      File.open(@english_file, 'r') do |file|
         while line=file.gets
           words = line.to_s.split(' ')
           words.each do |word|
@@ -30,7 +32,7 @@ module Homework2
       puts 'finished english file parsing'
   
       #get counts of german words
-      File.open(german_file, 'r') do |file|
+      File.open(@german_file, 'r') do |file|
         while line=file.gets
           words = line.to_s.split(' ')
           words.each do |word|
@@ -44,13 +46,12 @@ module Homework2
       num = @english_words.size
       
       puts 'starting initial filling in of t at ' + Time.new.inspect
-      @english_words.each do |e|
-        @german_words.each do |f|
-          @t[f.to_s + '|' + e.to_s] = 1 / num
+      @english_words.keys.each do |e|
+        @german_words.keys.each do |f|
+          @t[f.to_s + '|' + e.to_s] = 1. / num.to_f
         end
       end
-      puts 'finished initial filling in of t at ' + Time.new.inspect
-      
+      puts 'finished initial filling in of t at ' + Time.new.inspect      
     end
     
     def bullet2(dev_file)
@@ -64,20 +65,24 @@ module Homework2
     #bullet 2 part 2
     def k_best_foreign(dev_file, k=10)
       dev_words = []
-      File.open(dev_file, 'r') do |word|
-        dev_words << word.to_s
+      File.open(dev_file, 'r') do |file|
+        while(word = file.gets)
+          dev_words << word.to_s
+        end
       end
     
       #for each word, print list of k highest
       dev_words.each do |word|
-        k_highest = Array.new(k)
+        k_highest = Array.new
       
         #go through each german word
-        @german_words.each do |f|
-          prob = @t[f.to_s + '|' + word]
+        @german_words.keys.each do |f|
+          prob = @t[f.to_s + '|' + word.chomp]
           if k_highest.size < k
             k_highest << prob
           else
+            p prob
+            p k_highest
             if prob > k_highest[0]
               k_highest[0] = prob
             end
@@ -110,20 +115,24 @@ module Homework2
       return alignments
     end
     
-    def bullet3(english_file, german_file, n=20)
+    def bullet3(n=20)
       english_sentences = []
       german_sentences = []
       
       i = 0
-      File.open(english_file, 'r') do |line|
-        english_sentences << line.to_s.split(' ') if i < n        
-        i+=1
+      File.open(@english_file, 'r') do |file|
+        while(line = file.gets)
+          english_sentences << line.to_s.split(' ') if i < n        
+          i+=1
+        end
       end
       
       i = 0
-      File.open(german_file, 'r') do |line|
-        german_sentences << line.to_s.split(' ') if i < n
-        i+=1
+      File.open(@german_file, 'r') do |file|
+        while(line = file.gets)
+          german_sentences << line.to_s.split(' ') if i < n
+          i+=1
+        end
       end
       
       1.upto(n) do |i|
@@ -144,7 +153,9 @@ module Homework2
 end
 
 # Homework2::Question1.init('corpus.en', 'corpus.de')
+en = 'corpus_small.en'
+de = 'corpus_small.de'
 
-q1 = Homework2::Question1.new
-q1.init('corpus.en', 'corpus.de')
-p q1.english_words
+q1 = Homework2::Question1.new(en,de)
+q1.bullet2('devwords.txt')
+q1.bullet3
