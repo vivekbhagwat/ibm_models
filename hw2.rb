@@ -14,9 +14,14 @@ module Homework2
       raise "ASDFAKSJDFA" unless @english_sentences.size == @german_sentences.size
       
       delta = {}
-      n.times do |k|
+      n.times do |k|        
         eng = @english_sentences[k]
         ger = @german_sentences[k]
+        
+        #lines for figuring out time
+        p Time.now
+        p k
+        puts ''
         
         ger.each_with_index do |f, i|
           eng.each_with_index do |e, j|
