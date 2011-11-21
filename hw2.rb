@@ -19,9 +19,6 @@ module Homework2
         ger = @german_sentences[k]
         
         #lines for figuring out time
-        # p Time.now
-        # p k
-        # puts ''
         
         ger.each_with_index do |f, i|
           eng.each_with_index do |e, j|
@@ -83,30 +80,6 @@ module Homework2
           end
         end
       end
-      
-      # #get counts of english words
-      # File.open(@english_file, 'r') do |file|
-      #   while line=file.gets
-      #     words = line.to_s.split(' ')
-      #     @english_sentences << words
-      #     words.each do |word|
-      #       @english_words[word.to_s] += 1
-      #     end
-      #   end
-      # end
-      # puts 'finished english file parsing'
-      #   
-      # #get counts of german words
-      # File.open(@german_file, 'r') do |file|
-      #   while line=file.gets
-      #     words = line.to_s.split(' ')
-      #     @german_sentences << words
-      #     words.each do |word|
-      #       @german_words[word.to_s] += 1
-      #     end
-      #   end
-      # end
-      # puts 'finished german file parsing'
   
       #should NULL be included? is this even right?
       
@@ -119,11 +92,14 @@ module Homework2
         end
       end
       puts 'finished initial filling in of t at ' + Time.new.inspect      
-      p @t
+      # p @t
     end
     
     def bullet2(dev_file)
-      1.upto(5) do
+      1.upto(5) do |i|
+        p Time.now
+        p i
+        puts ''
         em_algorithm
       end
       
@@ -145,7 +121,7 @@ module Homework2
         k_highest = Array.new
         k_highest_words = Array.new
         #go through each german word
-        @german_words.keys.each do |f|
+        @possible_pairs[word].keys.each do |f|
           @t[word] = Hash.new(0.0) if @t[word].nil?
           prob = @t[word][f.to_s]
           
@@ -229,11 +205,11 @@ module Homework2
 end
 
 # Homework2::Question1.init('corpus.en', 'corpus.de')
-en = 'corpus_small.en'
-de = 'corpus_small.de'
-# en = 'corpus_500.en'
-# de = 'corpus_500.de'
+# en = 'corpus_small.en'
+# de = 'corpus_small.de'
+en = 'corpus_500.en'
+de = 'corpus_500.de'
 
 q1 = Homework2::Question1.new(en,de)
-# q1.bullet2('devwords.txt')
-# q1.bullet3
+q1.bullet2('devwords.txt')
+q1.bullet3
