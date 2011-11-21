@@ -4,16 +4,16 @@ module Homework2
   
   class Question1
     attr_accessor :english_words, :german_words, :t, :english_file, :german_file, 
-      :english_sentences, :german_sentences, :counts
+      :english_sentences, :german_sentences
     
     #no idea what input/output is
     def em_algorithm
       n = @english_sentences.size
-      @counts = Hash.new(0)
+      # @counts = Hash.new(0)
       
       raise "ASDFAKSJDFA" unless @english_sentences.size == @german_sentences.size
       
-      delta = {}
+      # delta = {}
       n.times do |k|        
         eng = @english_sentences[k]
         ger = @german_sentences[k]
@@ -31,23 +31,23 @@ module Homework2
               sum += g_hash[f]
             end
             
-            key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
-            delta[ key_kij ] = @t[e][f].to_f / sum
+            # key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
+            # delta[ key_kij ] 
+            delta = @t[e][f].to_f / sum
             
             key_ef = e + ' '+ f
-            @counts[ key_ef ] += delta[ key_kij ]
-            @counts[ e ] += delta[ key_kij ]
+            count_ef += delta#[ key_kij ]
+            count_e += delta#[ key_kij ]
             # @counts[ [j,i,l,m] ] += delta[ [k,i,j] ]
             # @counts[ [i,l,m] ] += delta[ [k,i,j] ]
             
-            @t[e][f] = @counts[key_ef]/@counts[e]
+            @t[e][f] = count_ef/count_e
           end
         end
         
-        @t
       end
       
-      
+      @t
     end
 
     def initialize(english, german)
