@@ -3,7 +3,7 @@
 module Homework2
   
   class Question1
-    attr_accessor :english_words, :german_words, :t, :english_file, :german_file, 
+    attr_accessor :possible_pairs, :english_words, :german_words, :t, :english_file, :german_file, 
       :english_sentences, :german_sentences, :counts
     
     #no idea what input/output is
@@ -19,9 +19,9 @@ module Homework2
         ger = @german_sentences[k]
         
         #lines for figuring out time
-        p Time.now
-        p k
-        puts ''
+        # p Time.now
+        # p k
+        # puts ''
         
         ger.each_with_index do |f, i|
           eng.each_with_index do |e, j|
@@ -54,8 +54,11 @@ module Homework2
       @english_file = english
       @german_file = german
       #provides number of each word
-      @english_words = Hash.new(0)
-      @german_words = Hash.new(0)
+      # @english_words = Hash.new(0)
+      # @german_words = Hash.new(0)
+      @possible_pairs = Hash.new
+      
+      
       @t = {}
       
       @english_sentences = []
@@ -63,41 +66,60 @@ module Homework2
       # raise "wtf" if @english_words.nil?
       # @english_words = Hash.new(0)
       
-      #get counts of english words
-      File.open(@english_file, 'r') do |file|
-        while line=file.gets
-          words = line.to_s.split(' ')
-          @english_sentences << words
-          words.each do |word|
-            @english_words[word.to_s] += 1
+      File.open(@english_file, 'r') do |file_e|
+        File.open(@german_file, 'r') do |file_g|
+          while line_e=file_e.gets
+            line_g = file_g.gets
+            
+            @english_sentences << line_e.to_s.split(' ')
+            @german_sentences << line_g.to_s.split(' ')
+            
+            @english_sentences.last.each do |word_e|
+              @possible_pairs[word_e] = Hash.new if @possible_pairs[word_e].nil?
+              @german_sentences.last.each do |word_g|
+                  @possible_pairs[word_e][word_g] = true
+              end
+            end
           end
         end
       end
-      puts 'finished english file parsing'
-  
-      #get counts of german words
-      File.open(@german_file, 'r') do |file|
-        while line=file.gets
-          words = line.to_s.split(' ')
-          @german_sentences << words
-          words.each do |word|
-            @german_words[word.to_s] += 1
-          end
-        end
-      end
-      puts 'finished german file parsing'
+      
+      # #get counts of english words
+      # File.open(@english_file, 'r') do |file|
+      #   while line=file.gets
+      #     words = line.to_s.split(' ')
+      #     @english_sentences << words
+      #     words.each do |word|
+      #       @english_words[word.to_s] += 1
+      #     end
+      #   end
+      # end
+      # puts 'finished english file parsing'
+      #   
+      # #get counts of german words
+      # File.open(@german_file, 'r') do |file|
+      #   while line=file.gets
+      #     words = line.to_s.split(' ')
+      #     @german_sentences << words
+      #     words.each do |word|
+      #       @german_words[word.to_s] += 1
+      #     end
+      #   end
+      # end
+      # puts 'finished german file parsing'
   
       #should NULL be included? is this even right?
-      num = @english_words.size
       
       puts 'starting initial filling in of t at ' + Time.new.inspect
-      @english_words.keys.each do |e|
+      @possible_pairs.keys.each do |e|
         @t[e.to_s] = Hash.new(0.0)
-        @german_words.keys.each do |f|
+        num = @possible_pairs[e].size
+        @possible_pairs[e].each do |f|
           @t[e.to_s][f.to_s] = 1./num.to_f
         end
       end
       puts 'finished initial filling in of t at ' + Time.new.inspect      
+      p @t
     end
     
     def bullet2(dev_file)
@@ -121,24 +143,40 @@ module Homework2
       dev_words.each do |word|
         word.chomp!
         k_highest = Array.new
-      
+        k_highest_words = Array.new
         #go through each german word
         @german_words.keys.each do |f|
           @t[word] = Hash.new(0.0) if @t[word].nil?
           prob = @t[word][f.to_s]
+          
+          min_index = min_index(k_highest)
+          
           if k_highest.size < k
             k_highest << prob
+            k_highest_words << f.to_s
           else
-            if prob > k_highest[0]
-              k_highest[0] = prob
+            if prob > k_highest[min_index]
+              k_highest[min_index] = prob
+              k_highest_words[min_index] = f.to_s
             end
           end
-          k_highest.sort!
+          # k_highest.sort!
         end
         
         #english: french_1, french_2, ... french_k
-        puts word + ": " + k_highest.inspect #prints list
+        highest = []
+        k_highest.size.times do |i| highest << [k_highest[i], k_highest_words[i]] end
+        
+        puts word + ": #{highest.inspect}" #prints list
       end
+    end
+    
+    def min_index(arr=[])
+      min_index = 0
+      arr.each_index do |i| 
+        min_index = i if arr[i] < arr[min_index]
+      end
+      min_index
     end
     
     def sentence_alignments(f_sentence=[], e_sentence=[])
@@ -191,11 +229,11 @@ module Homework2
 end
 
 # Homework2::Question1.init('corpus.en', 'corpus.de')
-# en = 'corpus_small.en'
-# de = 'corpus_small.de'
-en = 'corpus_500.en'
-de = 'corpus_500.de'
+en = 'corpus_small.en'
+de = 'corpus_small.de'
+# en = 'corpus_500.en'
+# de = 'corpus_500.de'
 
 q1 = Homework2::Question1.new(en,de)
-q1.bullet2('devwords.txt')
-q1.bullet3
+# q1.bullet2('devwords.txt')
+# q1.bullet3
