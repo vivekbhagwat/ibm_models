@@ -26,15 +26,16 @@ module Homework2
               sum += g_hash[f]
             end
             
-            delta[ [k,i,j] ] = @t[e][f].to_f / sum
+            key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
+            delta[ key_kij ] = @t[e][f].to_f / sum
             
-            
-            @counts[ [e,f] ] += delta[ [k, i, j] ]
-            @counts[ e ] += delta[ [k,i,j] ]
+            key_ef = e + ' '+ f
+            @counts[ key_ef ] += delta[ key_kij ]
+            @counts[ e ] += delta[ key_kij ]
             # @counts[ [j,i,l,m] ] += delta[ [k,i,j] ]
             # @counts[ [i,l,m] ] += delta[ [k,i,j] ]
             
-            @t[e][f] = @counts[[e,f]]/@counts[e]
+            @t[e][f] = @counts[key_ef]/@counts[e]
           end
         end
         
