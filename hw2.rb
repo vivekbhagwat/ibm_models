@@ -120,6 +120,9 @@ module Homework2
         word.chomp!
         k_highest = Array.new
         k_highest_words = Array.new
+        
+        @possible_pairs[word] = {} unless @possible_pairs[word]
+        
         #go through each german word
         @possible_pairs[word].keys.each do |f|
           @t[word] = Hash.new(0.0) if @t[word].nil?
