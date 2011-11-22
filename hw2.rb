@@ -194,7 +194,7 @@ module Homework2
         
         alignments = sentence_alignments(f_sentence, e_sentence)
         
-        p alignments
+        p alignments.map {|a| a+1}
         
         output = []
         alignments.each_with_index do |a,i|
@@ -442,7 +442,7 @@ else
   question_num = ARGV[0]
 end
 
-if question_num == 1
+if question_num.to_s == '1'
   q1 = Homework2::Question1.new(en,de)
   q1.bullet2('devwords.txt')
   q1.bullet3
