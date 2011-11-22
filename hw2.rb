@@ -430,7 +430,22 @@ end
 # de = 'corpus_500.de'
 en = 'corpus.en'
 de = 'corpus.de'
+question_num = 1
 
-q1 = Homework2::Question1.new(en,de)
-q1.bullet2('devwords.txt')
-q1.bullet3
+raise "Invalid number of arguments #{ARGV.size}" unless ARGV.size == 1 || ARGV.size == 3 
+
+if ARGV.size == 3
+  en = ARGV[0]
+  de = ARGV[1]
+  question_num = ARGV[2]
+else
+  question_num = ARGV[0]
+end
+
+if question_num == 1
+  q1 = Homework2::Question1.new(en,de)
+  q1.bullet2('devwords.txt')
+  q1.bullet3
+else
+  q2 = Homework2::Question2.new(en,de)
+end
