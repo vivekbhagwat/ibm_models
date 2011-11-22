@@ -24,9 +24,12 @@ module Homework2
           eng.each_with_index do |e, j|
             
             sum = 0.0
-            @t.each do |e_word, g_hash|
-              sum += g_hash[f]
+            eng.each do |e_word|
+              sum += @t[e_word][f]
             end
+            
+            
+            raise "#{e}, #{f} #{@t[e][f]}, #{counts[e]}" if sum == 0.0
             
             # key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
             # delta[ key_kij ] 
@@ -39,6 +42,8 @@ module Homework2
             # @counts[ [i,l,m] ] += delta[ [k,i,j] ]
             
             @t[e][f] = @counts[key_ef]/@counts[e]
+            
+            raise "#{sum}" if @t[e][f].nan?
           end
         end
         
@@ -87,8 +92,10 @@ module Homework2
       @possible_pairs.keys.each do |e|
         @t[e.to_s] = Hash.new(0.0)
         num = @possible_pairs[e].size
-        @possible_pairs[e].each do |f|
-          @t[e.to_s][f.to_s] = 1./num.to_f
+        @possible_pairs[e].keys.each do |f|
+          @t[e.to_s][f.to_s] = 1. / num.to_f
+          # raise num.to_s if @t[e.to_s][f.to_s].to_f.nan?
+          # raise "e: #{e}, f: #{f}, num: #{num}" if f == 'wir' && e == 'mediator'
         end
       end
       puts 'finished initial filling in of t at ' + Time.new.inspect      
@@ -210,8 +217,10 @@ end
 # Homework2::Question1.init('corpus.en', 'corpus.de')
 # en = 'corpus_small.en'
 # de = 'corpus_small.de'
-en = 'corpus_500.en'
-de = 'corpus_500.de'
+# en = 'corpus_500.en'
+# de = 'corpus_500.de'
+en = 'corpus.en'
+de = 'corpus.de'
 
 q1 = Homework2::Question1.new(en,de)
 q1.bullet2('devwords.txt')
