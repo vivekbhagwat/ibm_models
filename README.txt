@@ -1,3 +1,5 @@
+Vivek Bhagwat vsb2110 W4705 Natural Language Processing HW2 - Programming
+
 To run IBM Model 1:
 ruby hw2.rb corpus.en corpus.de 1
 

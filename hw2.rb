@@ -94,7 +94,7 @@ module Homework2
   
       #should NULL be included? is this even right?
       
-      puts 'starting initial filling in of t at ' + Time.new.inspect
+      # puts 'starting initial filling in of t at ' + Time.new.inspect
       @possible_pairs.keys.each do |e|
         @t[e.to_s] = Hash.new(0.0)
         num = @possible_pairs[e].size
@@ -104,15 +104,15 @@ module Homework2
           # raise "e: #{e}, f: #{f}, num: #{num}" if f == 'wir' && e == 'mediator'
         end
       end
-      puts 'finished initial filling in of t at ' + Time.new.inspect      
+      # puts 'finished initial filling in of t at ' + Time.new.inspect      
       # p @t
     end
     
     def bullet2(dev_file)
       1.upto(5) do |i|
-        p Time.now
-        p i
-        puts ''
+        # p Time.now
+        # p i
+        # puts ''
         em_algorithm
       end
       
