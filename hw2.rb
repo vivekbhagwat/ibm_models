@@ -232,22 +232,22 @@ module Homework2
         eng = @english_sentences[k]
         ger = @german_sentences[k]
 
+        m = ger.size
+        l = eng.size
         #lines for figuring out time
 
         ger.each_with_index do |f, i|
-          m = ger.size
+          key_ilm = "#{i} #{l} #{m}"          
           eng.each_with_index do |e, j|
-            l = eng.size
             sum = 0.0
-            key_ilm = "#{i} #{l} #{m}"
             eng.each_with_index do |e_word, j_index|
               sum += @q[j_index][key_ilm]*@t[e_word][f]
             end
             # raise "#{sum}, #{f}, #{eng}"
             
-            raise "#{e}, #{f}, #{key_ilm}, #{@t[e][f]}, #{@q[j][key_ilm]},
-            #{eng}
-            #{ger}" if sum == 0.0
+            # raise "#{e}, #{f}, #{key_ilm}, #{@t[e][f]}, #{@q[j][key_ilm]},
+            # #{eng}
+            # #{ger}" if sum == 0.0
 
 
 
@@ -267,6 +267,7 @@ module Homework2
 
             raise "#{sum}" if @t[e][f].nan?
           end
+          raise if key_ilm == "0 17 3"
         end
 
       end
@@ -279,7 +280,7 @@ module Homework2
       
       @q.keys.each do |j|
         @q[j].keys.each do |ilm|
-          @q[j][ilm] = @counts[j.to_s + ' ' + ilm.to_s] / @counts[ilm]
+          @q[j][ilm] = @counts[j.to_s + ' ' + ilm.to_s] / @counts[ilm] if @counts[ilm] != 0
         end
       end
     end
