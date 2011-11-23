@@ -35,11 +35,7 @@ module Homework2
 
             # key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
             # delta[ key_kij ]
-            unless model_2
-              delta = @t[e][f].to_f / sum
-            else
-              delta = (@q[key_jilm] * @t[e][f])
-            end
+            delta = @t[e][f].to_f / sum
             
             key_ef = e + ' ' + f
             @counts[ key_ef ] += delta#[ key_kij ]
