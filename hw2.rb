@@ -7,7 +7,7 @@ module Homework2
       :english_sentences, :german_sentences, :counts
     
     #no idea what input/output is
-    def em_algorithm(model_2 = false)
+    def em_algorithm
       n = @english_sentences.size
       @counts = Hash.new(0)
       
@@ -221,55 +221,67 @@ module Homework2
     attr_accessor :possible_pairs, :t, :q, :english_file, :german_file, 
       :english_sentences, :german_sentences, :counts
     
-    #no idea what input/output is
     def em_algorithm
       n = @english_sentences.size
       @counts = Hash.new(0)
-      
-      raise "ASDFAKSJDFA" unless @english_sentences.size == @german_sentences.size
-      
+
+      raise unless @english_sentences.size == @german_sentences.size
+
       # delta = {}
       n.times do |k|        
         eng = @english_sentences[k]
         ger = @german_sentences[k]
-        
+
         #lines for figuring out time
-        
+
         ger.each_with_index do |f, i|
+          m = ger.size
           eng.each_with_index do |e, j|
-            key_ef = e + ' ' + f
-            key_jilm = "#{j} #{i} #{l} #{m}"
-            key_ilm = "#{i} #{l} #{m}"
-            
-            
+            l = eng.size
             sum = 0.0
-            eng.each do |e_word|
-              sum += @q[key_jilm] * @t[e_word][f]
+            key_ilm = "#{i} #{l} #{m}"
+            eng.each_with_index do |e_word, j_index|
+              sum += @q[j_index][key_ilm]*@t[e_word][f]
             end
+            # raise "#{sum}, #{f}, #{eng}"
             
-            
-            raise "#{e}, #{f} #{@t[e][f]}, #{counts[e]}" if sum == 0.0
+            raise "#{e}, #{f}, #{key_ilm}, #{@t[e][f]}, #{@q[j][key_ilm]},
+            #{eng}
+            #{ger}" if sum == 0.0
 
-            
+
+
             # key_kij = k.to_s + ' ' + i.to_s + ' ' + j.to_s
-            # delta[ key_kij ] 
-            delta = (@q[key_jilm]* @t[e][f].to_f) / sum
-            
+            # delta[ key_kij ]
+            # delta = @t[e][f].to_f / sum
+            delta = (@t[e][f].to_f * @q[j][key_ilm].to_f) / sum
 
+            key_ef = e + ' ' + f
+            key_jilm = "#{j} " + key_ilm
             @counts[ key_ef ] += delta#[ key_kij ]
             @counts[ e ] += delta#[ key_kij ]
-            @counts[ key_jilm ] += delta
-            @counts[ key_ilm ] += delta
-            
-            @t[e][f] = @counts[key_ef]/@counts[e]
-            
+            @counts[key_jilm] += delta
+            @counts[key_ilm] += delta
+
+            # @t[e][f] = @counts[key_ef] / @counts[e]
+
             raise "#{sum}" if @t[e][f].nan?
           end
         end
-        
+
+      end
+
+      @t.keys.each do |e|
+        @t[e].keys.each do |f|
+          @t[e][f] = @counts[e+' '+f] / @counts[e]
+        end
       end
       
-      @t
+      @q.keys.each do |j|
+        @q[j].keys.each do |ilm|
+          @q[j][ilm] = @counts[j.to_s + ' ' + ilm.to_s] / @counts[ilm]
+        end
+      end
     end
 
     def initialize(english, german)
@@ -285,19 +297,69 @@ module Homework2
       
       #initialize q
       @q = {}      
-      @german_sentences.each_with_index do |ger, i|
+      @german_sentences.each_with_index do |ger, g_index|
         m = ger.size
-        @english_sentences.each_with_index do |eng, j|
-          @q[j] = Hash.new(0.0) if @q[j].nil?
+        @english_sentences.each_with_index do |eng, e_index|
           l = eng.size
-          key_ilm = "#{i} #{l} #{m}"
-          @q[j][key_ilm] = 1/(l+1)
+          ger.each_index do |i|
+            eng.each_index do |j|
+              @q[j] = Hash.new(0.0) if @q[j].nil?
+              key_ilm = "#{i} #{l} #{m}"
+              @q[j][key_ilm] = 1.0/(l+1).to_f
+            end
+          end
         end
       end
+    end
+    
+    def bullet2
+      5.times do
+        em_algorithm
+      end
+    end
+    
+    def sentence_alignments(f_sentence=[], e_sentence=[])
+      alignments = []
+      m = f_sentence.size
+      l = e_sentence.size
       
+      f_sentence.each_with_index do |f,i|
+        max_alignment = 0
+        max_prob = 0
+
+        e_sentence.each_with_index do |e,j|
+          if (@q[j]["#{i} #{l} #{m}"] * @t[e.to_s][f.to_s]) >= max_prob
+            max_prob = @q[j]["#{i} #{l} #{m}"] * @t[e.to_s][f.to_s]
+            max_alignment = j
+          end          
+        end
+
+        alignments << max_alignment
+      end
       
-      
-      
+      return alignments
+    end
+    
+    def bullet3(n=20)      
+      n.times do |i|
+        f_sentence = @german_sentences[i]
+        e_sentence = @english_sentences[i]
+        
+        alignments = sentence_alignments(f_sentence, e_sentence)
+        
+        p alignments.map {|a| a+1}
+        
+        output = []
+        alignments.each_with_index do |a,i|
+          output << [ f_sentence[i], e_sentence[a] ]
+        end
+        p output
+        p f_sentence
+        p e_sentence
+        
+        puts ''
+        
+      end
     end
     
   end
@@ -328,4 +390,6 @@ if question_num.to_s == '1'
   q1.bullet3
 else
   q2 = Homework2::Question2.new(en,de)
+  q2.bullet2
+  q2.bullet3
 end
